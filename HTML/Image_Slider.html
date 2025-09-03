@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        body {
+  margin: 0;
+  background: #111;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.8rem;
+  padding: 40px;
+  touch-action: pan-y;
+
+  display: flex;
+  flex-direction: column; /* ← dit zorgt dat .top en slider-container onder elkaar staan */
+  align-items: center; /* ← center inhoud horizontaal */
+}
+
+.top {
+  width: 100%;
+  max-width: 1200px;
+  text-align: center;
+}
+
+h1 {
+  text-align: center;
+  font-size: 2rem;
+  color: rgb(250, 91, 91);
+  letter-spacing: 0.4px;
+}
+
+h3 {
+  text-align: center;
+  font-size: 0.8rem;
+  color: rgb(245, 239, 239);
+  font-weight: 600;
+  letter-spacing: 0.4px;
+}
+
+.slider-container {
+  margin-top: 7%;
+  width: 90%;
+  max-width: 1200px;
+  overflow: hidden;
+  position: relative;
+}
+
+.slider-track {
+  display: flex;
+  transition: transform 0.5s ease-in-out;
+}
+
+.slider-track img {
+  width: 20%;
+  object-fit: cover;
+  border-radius: 10px;
+  padding: 5px;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.slider-track img:hover {
+  transform: scale(1.05);
+}
+
+.nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.5rem;
+  background: rgba(0, 0, 0, 0.801);
+  color: rgb(241, 15, 15);
+  border: none;
+  border-radius: 50%;
+  padding: 7px 15px;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.nav.prev {
+  left: 10px;
+}
+.nav.next {
+  right: 10px;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.overlay.show {
+  display: flex;
+}
+
+.card {
+  background: #fefefe;
+  color: #111;
+  padding: 30px;
+  border-radius: 20px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  position: relative;
+  animation: popIn 0.4s ease-out;
+}
+
+h2 {
+  margin-bottom: 5px;
+  font-size: 1.4rem;
+  letter-spacing: 0.4px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 800;
+}
+
+.gerne {
+  padding: 3px 6px;
+  border-radius: 15px;
+  border: 1px solid rgb(214, 210, 209);
+  font-size: 0.7rem;
+  color: rgb(61, 61, 61);
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  background-color: rgb(220, 224, 224);
+  margin: 0 4px;
+}
+
+strong {
+  font-size: 0.7rem;
+  color: rgb(56, 55, 55);
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+}
+
+.specs {
+  font-size: 0.7rem;
+  color: rgb(66, 65, 65);
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+}
+
+.close-btn {
+  position: absolute;
+  top: 0;
+  right: 7px;
+  background: transparent;
+  border: none;
+  font-size: 1.7rem;
+  font-weight: bold;
+  cursor: pointer;
+  color: #050505;
+}
+
+.close-btn:hover {
+  color: rgb(231, 50, 18);
+}
+
+@keyframes popIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .slider-track img {
+    width: 50%;
+  }
+  .card {
+    max-width: 90%;
+    padding: 20px;
+    font-size: 0.95rem;
+  }
+  h1 {
+    font-size: 1rem;
+  }
+  h3 {
+    font-size: 0.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .slider-track img {
+    width: 80%;
+  }
+  .card {
+    max-width: 95%;
+    padding: 15px;
+    font-size: 0.9rem;
+  }
+}
+
+.play-button {
+  width: 44px;
+  height: 30px;
+  border-radius: 7px;
+  border: none;
+  background-color: rgb(231, 50, 18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.play-button::before {
+  content: "";
+  display: block;
+  width: 0;
+  height: 0;
+  border-left: 10px solid rgb(253, 252, 252);
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  margin-left: 4px; /* optioneel, om het icoon te centreren */
+}
+
+ul {
+  padding-left: 20px;
+}
+
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+<div class="top">
+  <h1>Auto-Loop Carousel with Clickable Cards</h1>
+  <h3>A responsive, infinite-scrolling media slider with clickable cards, hover pause, and smooth transitions. Includes overlay modal support.</h3>
+</div>
+
+<div class="slider-container" id="slider-container">
+  <button class="nav prev">&#10094;</button>
+  <div class="slider-track" id="slider-track">
+    <img src="https://iili.io/F4lyyLg.jpg" data-card="card-img1" />
+    <img src="https://iili.io/F4lyphF.jpg" data-card="card-img2" />
+    <img src="https://iili.io/F4lyDmP.jpg" data-card="card-img3" />
+    <img src="https://iili.io/F4lymI1.jpg" data-card="card-img4" />
+    <img src="https://iili.io/F409HBa.jpg" data-card="card-img5" />
+    <img src="https://iili.io/F409JEJ.jpg" data-card="card-img6" />
+    <img src="https://iili.io/F409F7p.jpg" data-card="card-img7" />
+    <img src="https://iili.io/F409KkN.jpg" data-card="card-img8" />
+  </div>
+  <button class="nav next">&#10095;</button>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="card" id="card-content">
+    <!-- Wordt geladen uit template -->
+  </div>
+</div>
+
+<!-- Templates met rich content -->
+<template id="card-img1">
+  <div class="card-inner">
+    <img src="https://iili.io/F4lyyLg.jpg" style="width: 100%; border-radius: 10px;" />
+    <h2>Thunderbolts</h2> <span style="color: red;">&#9733;</span><span style="color: red;">&#9733;</span><span style="color: red;">&#9733;</span>
+    <button class="gerne">super-hero</button><button class="gerne">action</button><button class="gerne">adventure</button><button class="gerne">fantasy</button>
+    <p>
+      <strong>Director:</strong> <span class="specs">Jake Schreier</span>
+      <strong>Writers:</strong> <span class="specs">Eric Pearson, Joanna Calo, Kurt Busiek</span> <strong>Stars:</strong> <span class="specs">Florence Pugh, Sebastian Stan, Julia Louise-Dreyfus</span> <strong>Runtime:</strong> <span class="specs">110 Minutes</span>
+    </p>
+    <p>
+      After finding themselves ensnared in a death trap, an unconventional team of antiheroes must go on a dangerous mission that will force them to confront the darkest corners of their pasts.
+
+    </p>
+    <p>
+      <button class="play-button"></button>
+    </p>
+  </div>
+</template>
+
+<template id="card-img2">
+  <div class="card-inner">
+    <img src="https://iili.io/F4lyphF.jpg" style="width: 100%; border-radius: 10px;" />
+    <h2>Spiderman 4 2026</h2> <span style="color: red;">&#9733;</span><span style="color: red;">&#9733;</span><span style="color: red;">&#9733;</span><span style="color: red;">&#9733;</span>
+    <button class="gerne">super-hero</button><button class="gerne">action</button><button class="gerne">adventure</button><button class="gerne">fantasy</button>
+    <p>
+      <strong>Director:</strong> <span class="specs">Sam Raimi</span>
+      <strong>Writers:</strong> <span class="specs">John Francis, Daley Steve, Ditko Stan, LeeChris McKenna</span> <strong>Stars:</strong> <span class="specs">Jon Bernthal, Tom HollandZendaya</span> <strong>Runtime:</strong> <span class="specs">122 Minutes</span>
+    </p>
+    <p>Peter Parker tries to focus on college and leave Spider-Man behind.
+      But when a new threat endangers his friends, he must break his promise and suit up again, teaming with an unexpected ally to protect those he loves.
+    </p>
+    <p>
+      <button class="play-button"></button>
+    </p>
+  </div>
+</template>
+
+<template id="card-img3">
+  <div class="card-inner">
+    <img src="https://iili.io/F4lyDmP.jpg" style="width: 100%; border-radius: 10px;" />
+    <h2>Ironheart</h2> <span style="color: red;">&#9733;</span><span style="color: red;">&#9733;</span><span style="color: red;">&#9733;</span>
+    <button class="gerne">super-hero</button><button class="gerne">action</button><button class="gerne">adventure</button><button class="gerne">fantasy</button>
+    <p>
+      <strong>Director:</strong> <span class="specs">Sam Raimi</span>
+      <strong>Writers:</strong> <span class="specs">John Francis, Daley Steve, Ditko Stan, LeeChris McKenna</span> <strong>Stars:</strong> <span class="specs">Jon Bernthal, Tom HollandZendaya</span> <strong>Runtime:</strong> <span class="specs">122 Minutes</span>
+    </p>
+    <p>
+      Genius teenage inventor Riri Williams creates the most advanced suit of armor since Iron Man.
+    </p>
+    <p>
+      <button class="play-button"></button>
+    </p>
+  </div>
+</template>
+
+<template id="card-img4">
+  <div class="card-inner">
+    <img src="https://iili.io/F4lymI1.jpg" style="width: 100%; border-radius: 10px;" />
+    <h2>Aquaman and the Lost Kingdom</h2> <span style="color: red;">&#9733;</span><span style="color: red;">&#9733;</span><span style="color: red;">&#9733;</span><span style="color: red;">&#9733;</span>
+    <button class="gerne">super-hero</button><button class="gerne">action</button><button class="gerne">adventure</button><button class="gerne">fantasy</button>
+    <p>
+      <strong>Director:</strong> <span class="specs">Sam Raimi</span>
+      <strong>Writers:</strong> <span class="specs">John Francis, Daley Steve, Ditko Stan, LeeChris McKenna</span> <strong>Stars:</strong> <span class="specs">Jon Bernthal, Tom HollandZendaya</span> <strong>Runtime:</strong> <span class="specs">122 Minutes</span>
+    </p>
+    <p>
+      Black Manta seeks revenge on Aquaman for his father's death.
+      Wielding the Black Trident's power, he becomes a formidable foe.
+      To defend Atlantis, Aquaman forges an alliance with his imprisoned brother.
+    </p>
+    <p>
+      <button class="play-button"></button>
+    </p>
+  </div>
+</template>
+
+<template id="card-img5">
+  <div class="card-inner">
+    <img src="https://iili.io/F409HBa.jpg" style="width: 100%; border-radius: 10px;" />
+    <h2>Fantastic Four</h2>
+    <span style="color: red;">&#9733;</span><span style="color: red;">&#9733;</span><span style="color: red;">&#9733;</span> <button class="gerne">Super-hero</button><button class="gerne">action</button><button class="gerne">adventure</button><button class="gerne">fantasy</button>
+    <p>
+      <strong>Director:</strong> <span class="specs">Sam Raimi</span>
+      <strong>Writers:</strong> <span class="specs">John Francis, Daley Steve, Ditko Stan, LeeChris McKenna</span> <strong>Stars:</strong> <span class="specs">Jon Bernthal, Tom HollandZendaya</span> <strong>Runtime:</strong> <span class="specs">122 Minutes</span>
+    </p>
+    <p>
+      Forced to balance their roles as heroes with the strength of their family bond, the Fantastic Four must defend Earth from a ravenous space god called Galactus and his enigmatic Herald, Silver Surfer.
+    </p>
+    <p>
+      <button class="play-button"></button>
+    </p>
+  </div>
+</template>
+
+<template id="card-img6">
+  <div class="card-inner">
+    <img src="https://iili.io/F409JEJ.jpg" style="width: 100%; border-radius: 10px;" />
+    <h2>Eyes of Wakanda</h2> <span style="color: red;">&#9733;</span><span style="color: red;">&#9733;</span>
+    <span style="color: red;">&#9733;</span><span style="color: red;">&#9733;</span><span style="color: red;">&#9733;</span>
+    <button class="gerne">super-hero</button><button class="gerne">action</button><button class="gerne">adventure</button><button class="gerne">fantasy</button>
+    <p>
+      <strong>Director:</strong> <span class="specs">Sam Raimi</span>
+      <strong>Writers:</strong> <span class="specs">John Francis, Daley Steve, Ditko Stan, LeeChris McKenna</span> <strong>Stars:</strong> <span class="specs">Jon Bernthal, Tom HollandZendaya</span> <strong>Runtime:</strong> <span class="specs">122 Minutes</span>
+    </p>
+    <p>
+      Wakandan warriors who, throughout history, have traveled the world to retrieve dangerous vibranium artifacts.
+    </p>
+    <p>
+      <button class="play-button"></button>
+    </p>
+  </div>
+</template>
+
+<template id="card-img7">
+  <div class="card-inner">
+    <img src="https://iili.io/F409F7p.jpg" style="width: 100%; border-radius: 10px;" />
+    <h2>Daredevil</h2> <span style="color: red;">&#9733;</span><span style="color: red;">&#9733;</span><span style="color: red;">&#9733;</span><span style="color: red;">&#9733;</span>
+    <button class="gerne">super-hero</button><button class="gerne">action</button><button class="gerne">adventure</button><button class="gerne">fantasy</button>
+    <p>
+      <strong>Director:</strong> <span class="specs">Matt Corman, Dario Scardapane</span>
+      <strong>Writers:</strong> <span class="specs">John Francis, LeeChris McKenna</span> <strong>Stars:</strong> <span class="specs">Charlie Cox, Magarita Levieva, Vincent D'Onofrio</span> <strong>Runtime:</strong> <span class="specs">122 Minutes</span>
+    </p>
+    <p>
+      Matt Murdock finds himself on a collision course with Wilson Fisk when their past identities begin to emerge.
+    </p>
+    <p>
+      <button class="play-button"></button>
+    </p>
+  </div>
+</template>
+
+<template id="card-img8">
+  <div class="card-inner">
+    <img src="https://iili.io/F409KkN.jpg" style="width: 100%; border-radius: 10px;" />
+    <h2>Armor Wars</h2> <span style="color: red;">&#9733;</span><span style="color: red;">&#9733;</span><span style="color: red;">&#9733;</span>
+    <button class="gerne">super-hero</button><button class="gerne">action</button><button class="gerne">adventure</button><button class="gerne">fantasy</button>
+    <p>
+      <strong>Director:</strong> <span class="specs">Sam Raimi</span>
+      <strong>Writers:</strong> <span class="specs">John Francis, Daley Steve, Ditko Stan, LeeChris McKenna</span> <strong>Stars:</strong> <span class="specs">Jon Bernthal, Tom HollandZendaya</span> <strong>Runtime:</strong> <span class="specs">122 Minutes</span>
+    </p>
+    <p>
+      Find out in this movie what would happen if Tony Stark's tech fell into the wrong hands.
+    </p>
+    <p>
+      <button class="play-button"></button>
+    </p>
+  </div>
+</template>
+<script>const track = document.getElementById("slider-track");
+const overlay = document.getElementById("overlay");
+const card = document.getElementById("card-content");
+const container = document.getElementById("slider-container");
+const images = Array.from(track.querySelectorAll("img"));
+const visibleSlides = 5;
+let currentIndex = 0;
+let autoSlide;
+
+for (let i = 0; i < visibleSlides; i++) {
+  const clone = images[i].cloneNode(true);
+  clone.classList.add("clone");
+  track.appendChild(clone);
+}
+
+const allImages = Array.from(track.querySelectorAll("img"));
+
+function slideTo(index) {
+  track.style.transition = "transform 0.5s ease-in-out";
+  track.style.transform = `translateX(-${index * 20}%)`;
+  currentIndex = index;
+}
+
+function nextSlide() {
+  if (currentIndex >= images.length) {
+    track.style.transition = "none";
+    track.style.transform = `translateX(0%)`;
+    currentIndex = 0;
+    setTimeout(() => slideTo(1), 20);
+  } else {
+    slideTo(currentIndex + 1);
+  }
+}
+
+function prevSlide() {
+  if (currentIndex <= 0) {
+    track.style.transition = "none";
+    track.style.transform = `translateX(-${images.length * 20}%)`;
+    currentIndex = images.length;
+    setTimeout(() => slideTo(images.length - 1), 20);
+  } else {
+    slideTo(currentIndex - 1);
+  }
+}
+
+document.querySelector(".nav.next").onclick = nextSlide;
+document.querySelector(".nav.prev").onclick = prevSlide;
+
+function startAutoSlide() {
+  stopAutoSlide();
+  autoSlide = setInterval(() => nextSlide(), 4000);
+}
+
+function stopAutoSlide() {
+  clearInterval(autoSlide);
+}
+
+startAutoSlide();
+
+allImages.forEach((img) => {
+  img.addEventListener("click", () => {
+    stopAutoSlide();
+    const templateId = img.getAttribute("data-card");
+    const template = document.getElementById(templateId);
+    card.innerHTML = template?.innerHTML || "<p>Geen content gevonden.</p>";
+    overlay.classList.add("show");
+  });
+});
+
+overlay.addEventListener("click", (e) => {
+  if (e.target === overlay || e.target.classList.contains("close-btn")) {
+    overlay.classList.remove("show");
+    startAutoSlide();
+  }
+});
+
+let startX = 0;
+container.addEventListener("touchstart", (e) => {
+  startX = e.touches[0].clientX;
+});
+container.addEventListener("touchend", (e) => {
+  const diff = e.changedTouches[0].clientX - startX;
+  if (Math.abs(diff) > 50) {
+    diff > 0 ? prevSlide() : nextSlide();
+  }
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  const track = document.querySelector(".slider-track");
+
+  track.addEventListener("mouseover", stopAutoSlide);
+  track.addEventListener("mouseout", startAutoSlide);
+});
+</script>
+</body>
+</html>
